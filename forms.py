@@ -1,25 +1,3 @@
-import requests
-
-# Step 1: Define the Google Form URL
-form_url = "https://docs.google.com/forms/d/e/1FAIpQLSeUYMkI5ce18RL2aF5C8I7mPxF7haH23VEVz7PQrvz0Do0NrQ/viewform"  # Replace FORM_ID with the actual form ID
-
-# Step 2: Define the form data
-# Use the input field names (e.g., "entry.123456789") obtained from the form inspection
-form_data = {
-    "entry.123456789": "Henry Wu",    # Replace with the actual input name and value
-    "entry.987654321": "henrywzh88@gmail.com",  # Example: Email field
-    "entry.111213141": "Some Feedback"  # Example: Textarea field
-}
-
-# Step 3: Submit the form
-response = requests.post(form_url, data=form_data)
-
-# Step 4: Check the response
-if response.status_code == 200:
-    print("Form submitted successfully!")
-else:
-    print("Failed to submit the form. Status code:", response.status_code)
-
 # Extract passcode
 import logging
 import re
@@ -62,6 +40,13 @@ for message in conversation_history:
             passcode = match.group(2)
             results.append({'file_name': file_name, 'passcode': passcode})
 
-# Print the results
-for result in results:
-    print(f"File Name: {result['file_name']}, Passcode: {result['passcode']}")
+# Get the latest result, if available
+if results:
+    latest_result = results[0]  # Get the last entry
+    f_file_name = latest_result['file_name']
+    f_passcode = latest_result['passcode']
+    
+    print(f_file_name)
+    print(f_passcode)
+else:
+    print("No results found.")
