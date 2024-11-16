@@ -79,6 +79,9 @@ def read_data(path, password):
     _df = _df.apply(lambda x: np.where(x > 1, 0, x))
     _df = _df.apply(lambda x: np.where(x < -1, 0, x))
 
+    _df['strat_4'] = 0
+    _df['strat_5'] = 0
+
     return _df
 
 def get_positions(pos_dict):
