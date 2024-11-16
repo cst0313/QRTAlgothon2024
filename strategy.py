@@ -98,3 +98,15 @@ def run_strategy(file_name, password):
     submission_dict = get_submission_dict(pos_dict)
 
     return submission_dict
+
+def backtest(history, submission_dict, new_file, new_password):
+    new_df = read_data(path=path + new_file, password=new_password)
+    w_dict = {k : submission_dict[k] for k in submission_dict if k[:5] == 'strat'}
+    w_dict = pd.DataFrame(data=w_dict.values(), index=w_dict.keys())
+
+    pnls = pnl(new_df[-78:], w_dict)
+
+    final_val = np.prod(1 + pnls) - 1
+    history += [pl[0] for pl in pnls]
+
+    print(final_val)
