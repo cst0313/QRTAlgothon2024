@@ -17,19 +17,27 @@ def run_strategy(file_name, password):
         return np.sqrt(_weights.T @ (_df.cov() * 252) @ _weights)
 
     def compute_random_portfolio(_df, _iterations) -> None:
+        ranks = sortino_ratio(_df).sort_values(ascending=False).index[:24]
+        ranks = [int(strat[6:]) for strat in ranks]
         no_of_stocks = _df.shape[1]
-        rank = sortino_ratio(_df).sort_values(ascending=False).head(5).index[:4]  # top 4
-        rank = [int(strat[6:]) for strat in rank]
+
+        rank_4 = ranks[:4]  # top 4
         for i in range(_iterations):
-            weights = np.random.random(no_of_stocks)
-            for n in rank:
-                weights[n] = 0
+            weights = np.zeros(no_of_stocks)
+            for n in range(no_of_stocks):
+                if n in rank_4 or n not in ranks:
+                    weights[n] = 0
+                else:
+                    x = np.random.random()
+                    if x > 0.1:
+                        x /= 2
+                    weights[n] = x + 0.001
 
             weights = weights.round(4)
             weights /= abs(weights).sum()
             weights *= 0.6
 
-            for n in rank:
+            for n in rank_4:
                 weights[n] = 0.1
 
             portfolio_weights.append(weights)
@@ -65,14 +73,12 @@ def run_strategy(file_name, password):
 
     INITIAL_CASH = 1_000
 
-
     def compute_wealth(_df, _weights):
         initial_values = (1 + _df.iloc[0]) * _weights * INITIAL_CASH
         cumulative_ret = np.cumprod(1 + _df)
         cumulative_wealths = cumulative_ret * initial_values
 
         return cumulative_wealths.sum(axis=1)
-
 
     values = pd.DataFrame()
     values['Max Sharpe'] = compute_wealth(data, sharpe_w)
@@ -86,6 +92,7 @@ def run_strategy(file_name, password):
     results_weights['min risk'] = min_risk_w
 
     clipped_weights = results_weights['max sharpe ratio']
+    print(sum(clipped_weights))
 
     pos_dict = clipped_weights.to_dict()
     submission_dict = get_submission_dict(pos_dict)
