@@ -21,7 +21,7 @@ def run_strategy(file_name, password):
         ranks = [int(strat[6:]) for strat in ranks]
         no_of_stocks = _df.shape[1]
 
-        rank_4 = ranks[:4]  # top 4
+        rank_4 = ranks[:4]  # top 4 in sortino ratio
         for i in range(_iterations):
             weights = np.zeros(no_of_stocks)
             for n in range(no_of_stocks):
@@ -86,23 +86,21 @@ def run_strategy(file_name, password):
     values['Min Volatility'] = compute_wealth(data, min_risk_w)
 
     # find the portfolio weights
-    results_weights = pd.DataFrame(index=data.columns)
+    results_weights = pd.DataFrame(index = data.columns)
     results_weights['max sharpe ratio'] = sharpe_w
     results_weights['max return'] = max_return_w
     results_weights['min risk'] = min_risk_w
 
     clipped_weights = results_weights['max sharpe ratio']
-    #print(sum(clipped_weights))
 
     pos_dict = clipped_weights.to_dict()
     submission_dict = get_submission_dict(pos_dict)
-    #print(max_sharpe)
     
     return submission_dict, max_sharpe
 
 def backtest(history, submission_dict, new_file, new_password):
-    new_df = read_data(path=path + new_file, password=new_password)
-    w_dict = {k : submission_dict[k] for k in submission_dict if k[:5] == 'strat'}
+    new_df = read_data(path = path + new_file, password = new_password)
+    w_dict = {k: submission_dict[k] for k in submission_dict if k[:5] == 'strat'}
     w_dict = pd.DataFrame(data=w_dict.values(), index=w_dict.keys())
 
     pnls = pnl(new_df[-78:], w_dict)
