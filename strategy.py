@@ -54,7 +54,7 @@ def run_strategy(file_name, password):
     data = df[-78:]
 
     # run the simulations
-    compute_random_portfolio(data, 10_000)
+    compute_random_portfolio(data, 30000)
 
     # get the Max Sharpe Ratio, Max Return, Min Volatility
     max_sharpe = max(portfolio_sharpes)
@@ -92,12 +92,13 @@ def run_strategy(file_name, password):
     results_weights['min risk'] = min_risk_w
 
     clipped_weights = results_weights['max sharpe ratio']
-    print(sum(clipped_weights))
+    #print(sum(clipped_weights))
 
     pos_dict = clipped_weights.to_dict()
     submission_dict = get_submission_dict(pos_dict)
-
-    return submission_dict
+    #print(max_sharpe)
+    
+    return submission_dict, max_sharpe
 
 def backtest(history, submission_dict, new_file, new_password):
     new_df = read_data(path=path + new_file, password=new_password)
